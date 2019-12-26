@@ -1,3 +1,5 @@
-# Badge Reward System"# BadgeRewardSystem" 
-"# BadgeRewardSystem" 
-"# BadgeRewardSystem" 
+# Badge Reward System
+
+```
+npm rum start-dev
+```
