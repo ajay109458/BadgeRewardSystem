@@ -7,19 +7,21 @@ export class RuleEngine {
 
     private dataManager : DataManager = DataManager.getInstance();
 
+    private static instance: RuleEngine;
+
+    private ruleEvaluatorByNameMap: Map<string, IRuleEvaluator>;
+
+
+    private constructor() {
+        this.ruleEvaluatorByNameMap = new Map();
+    }
+
     public static getInstance(): RuleEngine {
         if (RuleEngine.instance == null) {
             RuleEngine.instance = new RuleEngine();
         }
 
         return RuleEngine.instance;
-    }
-    private static instance: RuleEngine;
-
-    private ruleEvaluatorByNameMap: Map<string, IRuleEvaluator>;
-
-    constructor() {
-        this.ruleEvaluatorByNameMap = new Map();
     }
 
     public getEvaluatorByName(name: string): IRuleEvaluator | undefined{
@@ -32,15 +34,15 @@ export class RuleEngine {
 
     public process(userId: string) {
         
+            
             let rules : BadgeRule[]  = this.dataManager.getBadgeRules();
 
             rules.forEach(rule => {
+                
                 let ruleEvaluator: IRuleEvaluator | undefined = this.getEvaluatorByName(rule.source);
                 if (ruleEvaluator != undefined)  {
                     ruleEvaluator.evalvate(userId, rule);
                 }
             });
-        
-            
     }
 }

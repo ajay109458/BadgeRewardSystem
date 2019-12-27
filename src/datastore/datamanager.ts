@@ -33,6 +33,9 @@ export class DataManager {
     }
 
     public getBadgeRules() : BadgeRule[] {
+
+        console.log(this.rules);
+
         return this.rules;
     }
 

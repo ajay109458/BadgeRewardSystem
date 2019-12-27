@@ -23,8 +23,7 @@ export class BadgeRuleController {
     }
 
     @Post()
-    private postMessage(req: Request, res: Response) {
-        
+    private addRule(req: Request, res: Response) {
 
         let source: string = req.body.source;
         let ruleType: string =  req.body.ruleType;
@@ -36,8 +35,8 @@ export class BadgeRuleController {
 
         this.datastore.addBadgeRule(rule);
 
-        return res.status(400).json({
-            error: req.params.msg,
+        return res.status(200).json({
+            rule: rule,
         });
     }
 }

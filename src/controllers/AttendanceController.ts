@@ -22,13 +22,20 @@ export class AttendanceController {
 
     @Post(':userId')
     private markAttendance(req: Request, res: Response) {
-        Logger.Info(req.params.msg);
-        this.datastore.addAttendance(req.params.userId);
 
-        
+        let userId: string = req.params.userId;
 
-        return res.status(400).json({
-            error: req.params.msg,
+        Logger.Info(userId);
+        this.datastore.addAttendance(userId);
+
+        /**
+         * Badge Assignment
+         */
+        this.ruleEngine.process(userId);
+
+        return res.status(200).json({
+            userId: req.params.userId,
+            status: 'attendance updated'
         });
     }
 

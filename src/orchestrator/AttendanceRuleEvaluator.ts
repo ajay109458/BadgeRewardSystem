@@ -12,7 +12,7 @@ class AttendanceRuleEvaluator implements IRuleEvaluator {
         this.expressionResolver = new ExpressionResolver();
     }
 
-    public getRuleDataFetcher(name: String): IDataFetcher {
+    public getRuleDataFetcher(name: String): IDataFetcher | undefined {
         return this.ruleDataFetcherByNameMap.get(name);
     }
 
@@ -22,15 +22,19 @@ class AttendanceRuleEvaluator implements IRuleEvaluator {
 
     public evalvate(userId: string, rule: BadgeRule) {
 
-        const dataFetcher: IDataFetcher = this.getRuleDataFetcher(rule.ruleType);
-        const actualValue: number = dataFetcher.getActualValue(userId);
+        const dataFetcher: IDataFetcher | undefined = this.getRuleDataFetcher(rule.ruleType);
 
-        const expectedValue: number = ExpressionResolver.getExpectedValue(rule.targetValue);
-        const isExpressionTrue: boolean = this.expressionResolver.isConditionAssertToTrue(actualValue, expectedValue, rule.operator);
+        if (!!dataFetcher) {
+            const actualValue: number = dataFetcher.getActualValue(userId);
 
-        if (isExpressionTrue) {
-            // assign rule.badge to userId
+            const expectedValue: number = ExpressionResolver.getExpectedValue(rule.targetValue);
+            const isExpressionTrue: boolean = this.expressionResolver.isConditionAssertToTrue(actualValue, expectedValue, rule.operator);
+
+            if (isExpressionTrue) {
+                // assign rule.badge to userId
+            }
         }
+        
 
     }
 }
