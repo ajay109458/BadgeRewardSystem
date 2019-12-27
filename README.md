@@ -26,11 +26,11 @@ GET - http://localhost:3000/api/badgerule
 POST - http://localhost:3000/api/badgerule
 
 {
-  "source": "attendance",
+  "source": "AM",
   "ruleType": "lastXdays",
   "operator": ">=",
-  "targetValue": "30",
-  "badgeId": "12323"
+  "targetValue": "5",
+  "badgeId": "<Check Badge Id>"
 }
 ```
 
