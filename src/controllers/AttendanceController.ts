@@ -8,15 +8,18 @@ import { RuleEngine } from '../orchestrator/RuleEngine';
 @Controller('api/attendance')
 export class AttendanceController {
 
-    private datastore = DataManager.getInstance();
-    private ruleEngine = RuleEngine.getInstance();
+    private datastore: DataManager = DataManager.getInstance();
+    private ruleEngine: RuleEngine = RuleEngine.getInstance();
 
     @Get(':userId')
     private getAttendance(req: Request, res: Response) {
-        Logger.Info(req.params.userId);
+        let userId: string = req.params.userId;
+        Logger.Info("Fetching attendance for user : " + userId);
+        let currentAttendance = this.datastore.getAttendance(userId);
+
         res.status(200).json({
-            userId: req.params.userId,
-            attendance: this.datastore.getAttendance(req.params.userId)
+            userId: userId,
+            attendance: currentAttendance
         });
     }
 
@@ -26,16 +29,17 @@ export class AttendanceController {
         let userId: string = req.params.userId;
 
         Logger.Info(userId);
-        this.datastore.addAttendance(userId);
+        let newAttendance: number = this.datastore.addAttendance(userId);
 
         /**
-         * Badge Assignment
+         * Process to check badge assginment
          */
+        Logger.Info(AttendanceController.name + " Validating if a badge can be assigned.");
         this.ruleEngine.process(userId);
 
         return res.status(200).json({
             userId: req.params.userId,
-            status: 'attendance updated'
+            status: newAttendance
         });
     }
 

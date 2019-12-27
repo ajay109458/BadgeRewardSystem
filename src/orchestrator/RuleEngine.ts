@@ -2,6 +2,8 @@
 import BadgeRule from "../model/BadgeRule";
 import IRuleEvaluator from "./IRuleEvaluator";
 import { DataManager } from '../datastore/datamanager';
+import AttendanceRuleEvaluator from './AttendanceRuleEvaluator';
+import { Logger } from '@overnightjs/logger';
 
 export class RuleEngine {
 
@@ -14,6 +16,8 @@ export class RuleEngine {
 
     private constructor() {
         this.ruleEvaluatorByNameMap = new Map();
+
+        this.registerEvaluator("AM", AttendanceRuleEvaluator.getInstance());
     }
 
     public static getInstance(): RuleEngine {
@@ -37,7 +41,11 @@ export class RuleEngine {
             
             let rules : BadgeRule[]  = this.dataManager.getBadgeRules();
 
+
+
             rules.forEach(rule => {
+                
+                Logger.Info("Processing rule : " + rule.ruleType);
                 
                 let ruleEvaluator: IRuleEvaluator | undefined = this.getEvaluatorByName(rule.source);
                 if (ruleEvaluator != undefined)  {

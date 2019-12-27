@@ -1,5 +1,9 @@
 class ExpressionResolver {
 
+    constructor() {
+        
+    }
+
     public static getExpectedValue(value: string): number {
 
         // validate arguments
@@ -34,3 +38,5 @@ class ExpressionResolver {
                 !isNaN(Number(value.toString())));
     }
 }
+
+export default ExpressionResolver;

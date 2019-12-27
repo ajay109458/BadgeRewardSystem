@@ -35,16 +35,15 @@ export class BadgeController {
     }
 
     @Post(':badgeName')
-    private postMessage(req: Request, res: Response) {
-        
-        Logger.Info(req.params.badgeName);
+    private addBadge(req: Request, res: Response) {
 
-        this.datastore.addBadge(
-            req.params.badgeName
-        );
+        let badgeName: string = req.params.badgeName;
+        Logger.Info("Creating a new badge with name : " + badgeName);
 
-        return res.status(400).json({
-            error: req.params.msg,
+        let badge: Badge = this.datastore.addBadge(badgeName);
+
+        return res.status(200).json({
+            badge: badge,
         });
     }
 }

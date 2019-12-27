@@ -25,6 +25,9 @@ export class BadgeRuleController {
     @Post()
     private addRule(req: Request, res: Response) {
 
+        
+        Logger.Info("Recieved request content to add rule : " + JSON.stringify(req.body));
+
         let source: string = req.body.source;
         let ruleType: string =  req.body.ruleType;
         let operator: string = req.body.operator;
@@ -38,5 +41,6 @@ export class BadgeRuleController {
         return res.status(200).json({
             rule: rule,
         });
+        
     }
 }

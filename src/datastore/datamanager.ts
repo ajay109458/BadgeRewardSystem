@@ -2,9 +2,15 @@
  * Purpose of this class is store data later this classes can be replaced with a database
  */
 import Badge from "../model/Badge";
-import BadgeRule from 'src/model/BadgeRule';
+import BadgeRule from '../model/BadgeRule';
+import { Logger } from '@overnightjs/logger';
 
 export class DataManager {
+
+    private badgeIdsByUserIdMap: Map<string, string[]>;
+    private attendanceByUserIdMap: Map<string, number>;
+    private badgesByIdMap: Map<string, Badge>;
+    private rules: BadgeRule[];
 
     public static instance: DataManager;
 
@@ -16,11 +22,6 @@ export class DataManager {
         return DataManager.instance;
     }
 
-    private badgeIdsByUserIdMap: Map<string, string[]>;
-    private attendanceByUserIdMap: Map<string, number>;
-    private badgesByIdMap: Map<string, Badge>;
-    private rules: BadgeRule[];
-
     private constructor() {
         this.badgeIdsByUserIdMap = new Map();
         this.attendanceByUserIdMap = new Map();
@@ -28,6 +29,10 @@ export class DataManager {
         this.rules = [];
     }
 
+    /**
+     * 
+     * BADGE RULES APIs
+     */
     public addBadgeRule(rule: BadgeRule) {
         this.rules.push(rule);
     }
@@ -39,11 +44,17 @@ export class DataManager {
         return this.rules;
     }
 
-    public addAttendance(userId: string): void {
+    /**
+     * 
+     * USER ATTENDANCE APIs
+     */
+    public addAttendance(userId: string): number {
         const currentAttendance: number | undefined = this.attendanceByUserIdMap.get(userId);
 
-        let count : number = currentAttendance || 1;
-        this.attendanceByUserIdMap.set(userId, count + 1)
+        let newAttendance : number = (currentAttendance || 0) + 1;
+        this.attendanceByUserIdMap.set(userId, newAttendance);
+
+        return newAttendance;
     }
 
     public getAttendance(userId: string): number {
@@ -51,25 +62,43 @@ export class DataManager {
         return currentAttendance || 0;
     }
 
-    public assignBadge(userId: string, badgeId: string): void {
-        let assignedBadges = this.badgeIdsByUserIdMap.get(userId);
+    /**
+     * 
+     * BADGE APIs
+     */
 
-        if (assignedBadges == null) {
-            assignedBadges = [];
+    public assignBadge(userId: string, badgeId: string): void {
+        let assignedBadgeIds = this.badgeIdsByUserIdMap.get(userId);
+
+        if (assignedBadgeIds == null) {
+            assignedBadgeIds = [];
         }
 
-        assignedBadges.push(badgeId);
+        let isBadgeAlreadyAssigned: boolean = false;
+        assignedBadgeIds.forEach((value) => {
+            if (value == badgeId) {
+                isBadgeAlreadyAssigned = true;
+            }
+        })
 
-        this.badgeIdsByUserIdMap.set(userId, assignedBadges);
+        if (!isBadgeAlreadyAssigned) {
+            assignedBadgeIds.push(badgeId);
+        } else {
+            let badgeName = this.badgesByIdMap.get(badgeId)?.getName();
+            Logger.Info("Badge '" +  badgeName + "' is already assigned");
+        }
+
+        this.badgeIdsByUserIdMap.set(userId, assignedBadgeIds);
     }
 
     public addBadge(name: string) {
-        const badge = new Badge(this.makeid(5), name);
-
-
+        const generatedBadgeId = this.makeid(5);
+        const badge = new Badge(generatedBadgeId, name);
         this.badgesByIdMap.set(badge.getId(), badge);
+        
+        Logger.Info("Badge created with name : " + badge);
 
-        console.log(this.badgesByIdMap);
+        return badge;
     }
 
     public getBadgeById(badgeId: string): Badge | undefined{
@@ -111,6 +140,11 @@ export class DataManager {
         return badges;
     }
 
+
+    /**
+     * 
+     * UTIL APIs
+     */
     private makeid(length: number) {
         let result           = "";
         const characters       = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
