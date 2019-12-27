@@ -1,5 +1,5 @@
 # Badge Reward System
 
 ```
-npm rum start-dev
+npm run start-dev
 ```
