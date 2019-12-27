@@ -2,6 +2,7 @@ import IDataFetcher from "../datafetcher/IDataFetcher";
 import BadgeRule from "../model/BadgeRule";
 import IRuleEvaluator from "./IRuleEvaluator";
 import LastXContiniousDayAttendance from '../datafetcher/LastXContiniousDayAttendance';
+import LastContinousWeekendAttendanceCount from '../datafetcher/LastContinousWeekendAttendanceCount'
 import { DataManager } from '../datastore/datamanager';
 import ExpressionResolver from './ExpressionResolver'
 import { Logger } from '@overnightjs/logger';
@@ -22,20 +23,27 @@ class AttendanceRuleEvaluator implements IRuleEvaluator {
         return AttendanceRuleEvaluator.instance;
     }
 
-
     constructor() {
         this.ruleDataFetcherByNameMap = new Map();
         this.expressionResolver = new ExpressionResolver();
         this.dataManager = DataManager.getInstance();
 
-        this.registerRuleDataFetcher("lastXdays", new LastXContiniousDayAttendance());
+        this.registerAllDataFetcher();
+    }
+
+    public registerAllDataFetcher() {
+        let lastXDays: IDataFetcher = new LastXContiniousDayAttendance();
+        this.setRuleDataFetcher(lastXDays.getName(), lastXDays);
+
+        let lastContinousWeekend = new LastContinousWeekendAttendanceCount();
+        this.setRuleDataFetcher(lastContinousWeekend.getName(), lastContinousWeekend);
     }
 
     public getRuleDataFetcher(name: String): IDataFetcher | undefined {
         return this.ruleDataFetcherByNameMap.get(name);
     }
 
-    public registerRuleDataFetcher(name: String, dataFetcher: IDataFetcher) {
+    public setRuleDataFetcher(name: String, dataFetcher: IDataFetcher) {
         this.ruleDataFetcherByNameMap.set(name, dataFetcher);
     }
 
@@ -61,7 +69,6 @@ class AttendanceRuleEvaluator implements IRuleEvaluator {
                 Logger.Info("Rule doesn't meet the criteria to assign badge : "  + rule.ruleType);
             }
         }
-        
 
     }
 }

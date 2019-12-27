@@ -1,6 +1,7 @@
 interface IDataFetcher {
     getActualValue(userId: string): number;
-    getProperties(): String[];
+    getProperties(): string[];
+    getName(): string;
 }
 
 export default IDataFetcher;

@@ -1,9 +1,16 @@
 import IDataFetcher from "./IDataFetcher";
+import { DataManager } from '../datastore/datamanager';
 
 class LastXContiniousDayAttendance implements IDataFetcher {
 
+    private dataManager: DataManager = DataManager.getInstance();
+
     constructor() {
 
+    }
+
+    public getName() {
+        return "lastXdays";
     }
 
     public getProperties(): string[] {
@@ -12,10 +19,9 @@ class LastXContiniousDayAttendance implements IDataFetcher {
 
     public getActualValue(userId: string): number {
 
-        // Get last X constinious days attendance for userId
-        const attendance = 10;
+        const currentAttendance = this.dataManager.getAttendance(userId);
 
-        return attendance;
+        return currentAttendance;
     }
 
 }
